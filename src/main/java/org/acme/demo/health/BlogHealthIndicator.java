@@ -1,4 +1,4 @@
-package org.acme.demo.indicator;
+package org.acme.demo.health;
 
 import org.acme.demo.repository.UserRepository;
 import org.springframework.boot.actuate.health.Health;

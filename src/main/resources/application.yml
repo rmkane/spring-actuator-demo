@@ -12,7 +12,7 @@ management:
       enabled: true
     ping:
       enabled: true
-    db:
+    postgres:
       enabled: true
     schema:
       enabled: true
