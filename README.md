@@ -1,28 +1,3 @@
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 # Blog Application with Spring Boot and Flyway
 
 This is a Spring Boot application with integrated Flyway database migrations for a simple blog system.
@@ -34,13 +9,11 @@ This is a Spring Boot application with integrated Flyway database migrations for
 - **Flyway** for database migrations
 - **JPA/Hibernate** for data access
 - **Sample blog data** pre-loaded through migrations
+
 ## Database Structure
 
-
-
-
-
 The application includes three main entities:
+
 - `User`: Blog authors
 - `Blog`: Blog posts
 - `Comment`: Comments on blog posts
@@ -48,9 +21,11 @@ The application includes three main entities:
 ## Getting Started
 
 ### Prerequisites
+
 - Docker (for database setup)
 - Java 21
 - Maven
+
 ### Setup
 
 1. Start the PostgreSQL database:
