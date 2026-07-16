@@ -7,9 +7,9 @@
 
   <parent>
     <groupId>org.acme.common</groupId>
-    <artifactId>common-pom</artifactId>
+    <artifactId>common-starter-parent</artifactId>
     <version>0.1.0-SNAPSHOT</version>
-    <relativePath>../../common-pom/pom.xml</relativePath>
+    <relativePath>../../common-pom/common-starter-parent/pom.xml</relativePath>
   </parent>
 
   <groupId>org.acme.common</groupId>
