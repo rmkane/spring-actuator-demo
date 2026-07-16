@@ -7,11 +7,16 @@
 
   <groupId>org.acme.common</groupId>
   <artifactId>acme-aggregator</artifactId>
-  <version>0.1.0-SNAPSHOT</version>
+  <version>${revision}</version>
   <packaging>pom</packaging>
 
   <name>ACME Aggregator</name>
   <description>Aggregator project for Spring Boot modules</description>
+
+  <properties>
+    <revision>0.1.0-SNAPSHOT</revision>
+    <flatten-maven-plugin.version>1.7.3</flatten-maven-plugin.version>
+  </properties>
 
   <modules>
     <module>common-pom</module>

@@ -8,7 +8,7 @@
   <parent>
     <groupId>org.acme.common</groupId>
     <artifactId>acme-aggregator</artifactId>
-    <version>${revision}</version>
+    <version>0.1.0-SNAPSHOT</version>
     <relativePath>../../pom.xml</relativePath>
   </parent>
 

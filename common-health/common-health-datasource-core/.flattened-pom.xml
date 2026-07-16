@@ -8,32 +8,25 @@
   <parent>
     <groupId>org.acme.common</groupId>
     <artifactId>common-starter-parent</artifactId>
-    <version>${revision}</version>
+    <version>0.1.0-SNAPSHOT</version>
     <relativePath>../../common-pom/common-starter-parent/pom.xml</relativePath>
   </parent>
 
   <groupId>org.acme.common</groupId>
-  <artifactId>common-health-datasource-postgres</artifactId>
+  <artifactId>common-health-datasource-core</artifactId>
 
-  <name>Common Health Datasource Postgres</name>
-  <description>A common health datasource PostgreSQL module</description>
+  <name>Common Health Datasource Core</name>
+  <description>A common health datasource core module</description>
 
   <dependencies>
     <dependency>
-      <groupId>org.acme.common</groupId>
-      <artifactId>common-health-datasource-core</artifactId>
+      <groupId>org.springframework.boot</groupId>
+      <artifactId>spring-boot-actuator</artifactId>
     </dependency>
 
-    <!-- @ConditionalOnEnabledHealthIndicator -->
-    <dependency>
-        <groupId>org.springframework.boot</groupId>
-        <artifactId>spring-boot-actuator-autoconfigure</artifactId>
-    </dependency>
-
-    <!-- @Component (also brings in spring-core, which contains Assert) -->
     <dependency>
         <groupId>org.springframework</groupId>
-        <artifactId>spring-context</artifactId>
+        <artifactId>spring-jdbc</artifactId>
     </dependency>
   </dependencies>
 </project>

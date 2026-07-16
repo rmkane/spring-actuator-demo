@@ -6,9 +6,9 @@ Multi-module Maven project: shared health-check libraries plus an example Spring
 
 ```text
 .
-├── pom.xml                                 # root aggregator only
+├── pom.xml                                 # root aggregator; also the top of the version-inheritance chain
 ├── common-pom/                             # aggregator for the two artifacts below
-│   ├── common-starter-parent/              # actual Maven parent for every module
+│   ├── common-starter-parent/              # actual Maven parent for every buildable module
 │   └── common-dependencies/                # shared dependency-management BOM
 ├── common-health/
 │   ├── common-health-datasource-core/      # DB-neutral health-check abstraction
@@ -20,18 +20,28 @@ Multi-module Maven project: shared health-check libraries plus an example Spring
 └── README.md
 ```
 
-The root `pom.xml` is an aggregator only and contains the top-level `<modules>` list. `common-pom/pom.xml` is also an aggregator only.
+The root `pom.xml` contains the top-level `<modules>` list. `common-pom/pom.xml` is a pure aggregator.
 
-Every buildable module's actual `<parent>` is `common-pom/common-starter-parent/pom.xml`. It extends `spring-boot-starter-parent`, explicitly enforces Java 21, imports `common-dependencies`, and provides shared plugin and resource configuration.
+Every buildable module's actual `<parent>` is `common-pom/common-starter-parent/pom.xml`, which explicitly enforces Java 21 and provides shared plugin and resource configuration. `common-starter-parent`'s own `<parent>` is `common-dependencies`, whose own `<parent>` is the root `pom.xml`. This chain exists solely to propagate the shared `revision` and `flatten-maven-plugin.version` properties down from one declaration in root `pom.xml` — it is a deliberate, narrow exception to "don't make an aggregator a module's parent" (below), made only for version propagation. Do not use it to move other shared build configuration into `pom.xml` or `common-pom/pom.xml`; that still belongs in `common-starter-parent`.
+
+`common-starter-parent` no longer extends `spring-boot-starter-parent` directly. Instead `common-dependencies` imports `spring-boot-dependencies` as a BOM, and `common-starter-parent` explicitly replicates the parts of Spring Boot's parent behavior a standalone parent needs: the Java 21 release config on `maven-compiler-plugin`, pinned core Maven plugin versions, `spring-boot-maven-plugin`'s `repackage` execution binding, and `application*.yml/yaml/properties` resource filtering. When bumping the Spring Boot version, update `spring-boot.version` in `common-dependencies` and the plugin-version properties in `common-starter-parent` together — they are not linked automatically.
 
 `common-dependencies` is a plain BOM containing shared dependency management for versions not already managed by Spring Boot, such as springdoc.
 
-Do not put shared build configuration in either aggregator POM, and do not make an aggregator a module's `<parent>`.
+### Version management
+
+Every module's `<version>` is `${revision}`, declared once as a property in root `pom.xml` and inherited through the parent chain described above — this is Maven's CI-friendly-versions feature. Do not hardcode a version in any module; either omit `<version>` to inherit it, or write `${revision}` explicitly in a `<parent><version>` element.
+
+`common-starter-parent` and `common-dependencies` bind `flatten-maven-plugin` (`flattenMode=resolveCiFriendliesOnly`, `updatePomFile=true`) so the POM installed to the local/remote repository has a real resolved version instead of the literal `${revision}` text — a `<parent><version>${revision}</version>` only resolves within a reactor build, not for anything consuming an already-installed/published POM outside it.
+
+`resolveCiFriendliesOnly` only resolves the reserved `revision`/`sha1`/`changelist` properties. Other properties (e.g. the plugin-version properties in `common-starter-parent`) stay as literal `${...}` placeholders in the installed POM. This has no effect on this repo's actual workflow, since every build goes through the Makefile's full-reactor `mvn` invocations and reads properties from source POMs, not installed ones — but it means a module must never be built standalone outside the reactor (e.g. `cd example-rest-api && mvn install`), since that would try to resolve those placeholders from the installed artifact and fail.
+
+Do not put shared build configuration in either pure aggregator (root `pom.xml`'s non-`revision`/non-`flatten-maven-plugin.version` content, and `common-pom/pom.xml`), and do not make an aggregator a module's `<parent>` except for the root-`pom.xml` version-inheritance chain documented above.
 
 ## Module responsibilities
 
-* **common-starter-parent** — Maven parent for every buildable module. Extends `spring-boot-starter-parent`, enforces Java 21, imports `common-dependencies`, and provides shared plugin and resource configuration. It is not a runtime dependency.
-* **common-dependencies** — BOM containing dependency management only. Add shared dependency versions here when they are not already managed by Spring Boot or another imported BOM.
+* **common-starter-parent** — Maven parent for every buildable module. Its own `<parent>` is `common-dependencies` (for `revision` inheritance only, see Version management above). Imports `spring-boot-dependencies` via `common-dependencies`, enforces Java 21, pins core Maven plugin versions and the `spring-boot-maven-plugin` `repackage` execution, and provides shared resource filtering. It is not a runtime dependency.
+* **common-dependencies** — BOM containing dependency management. Its own `<parent>` is the root `pom.xml` (for `revision` inheritance only). Add shared dependency versions here when they are not already managed by Spring Boot or another imported BOM.
 * **common-health** — Pure aggregator for the two datasource modules below. It contains no Java source.
 * **common-health-datasource-core** — Contains `org.acme.common.health.core.AbstractDatasourceHealthIndicator`. Must remain database-neutral and must not depend on PostgreSQL-specific code.
 * **common-health-datasource-postgres** — Contains `org.acme.common.health.postgres.PostgresHealthIndicator`. Depends on core; core must never depend back on this module.
@@ -90,7 +100,8 @@ Before changing Maven configuration:
 2. Inspect `common-starter-parent/pom.xml`.
 3. Inspect `common-dependencies/pom.xml` when dependencies or versions are involved.
 4. Inspect the relevant aggregator POM when modules are being added, removed, or moved.
-5. Confirm whether the change belongs in the module, shared parent, BOM, or aggregator.
+5. Inspect root `pom.xml` when the `revision` or `flatten-maven-plugin.version` property is involved — it is the single declaration point for both.
+6. Confirm whether the change belongs in the module, shared parent, BOM, or aggregator.
 
 Put configuration in the narrowest correct location:
 
@@ -116,7 +127,7 @@ Do not make unrelated cleanup or formatting changes.
 * Keep optional plugin execution module-specific unless every child module genuinely requires it.
 * Do not use system-scoped dependencies.
 * Do not add absolute local filesystem paths to POM files.
-* When adding a module, add it to the appropriate aggregator and verify that its `<parent>` points to `common-starter-parent`.
+* When adding a module, add it to the appropriate aggregator and verify that its `<parent>` points to `common-starter-parent` with `<version>${revision}</version>` — never a hardcoded version.
 
 ## Java and Spring conventions
 
