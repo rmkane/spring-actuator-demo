@@ -1,4 +1,4 @@
-package org.acme.demo.health;
+package org.acme.common.health.core;
 
 import javax.sql.DataSource;
 

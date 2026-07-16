@@ -1,9 +1,11 @@
-package org.acme.demo.health;
+package org.acme.common.health.postgres;
 
 import javax.sql.DataSource;
 
 import org.springframework.boot.actuate.autoconfigure.health.ConditionalOnEnabledHealthIndicator;
 import org.springframework.stereotype.Component;
+
+import org.acme.common.health.core.AbstractDatasourceHealthIndicator;
 
 /**
  * Health indicator for PostgreSQL database connectivity.
