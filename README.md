@@ -1,31 +1,40 @@
-# Blog Application with Spring Boot and Flyway
+# Spring Actuator Demo
 
-This is a Spring Boot application with integrated Flyway database migrations for a simple blog system.
+A multi-module Maven project: shared Spring Boot Actuator health-check libraries, plus an example REST application that consumes them.
 
-## Features
+```text
+.
+├── common-pom/                             # aggregator: shared Maven parent + dependency BOM
+│   ├── common-starter-parent/              # the actual <parent> for every module
+│   └── common-dependencies/                # shared dependency-management BOM
+├── common-health/                          # aggregator for shared health-check libraries
+│   ├── common-health-datasource-core/      # DB-neutral health-check abstraction
+│   └── common-health-datasource-postgres/  # PostgreSQL-specific health indicator
+└── example-rest-api/                       # runnable Spring Boot blog app — see its own README
+```
 
-- **Spring Boot 3.5.14** with Java 21
-- **PostgreSQL 17** database
-- **Flyway** for database migrations
-- **JPA/Hibernate** for data access
-- **Sample blog data** pre-loaded through migrations
+Each module has its own README with more detail.
 
-## Database Structure
+## Prerequisites
 
-The application includes three main entities:
-
-- `User`: Blog authors
-- `Blog`: Blog posts
-- `Comment`: Comments on blog posts
-
-## Getting Started
-
-### Prerequisites
-
-- Docker (for database setup)
 - Java 21
 - Maven
+- Docker (for local PostgreSQL)
 
-### Setup
+## Getting started
 
-1. Start the PostgreSQL database:
+```bash
+make help    # list all available commands
+make run     # start PostgreSQL via Docker Compose, then run example-rest-api
+make health  # curl the actuator health endpoint
+```
+
+See the [Makefile](Makefile) for the full command list (build, test, install, docker-up/down/logs/ps).
+
+## Repository layout
+
+- **common-pom** — see [common-pom](common-pom/) — the shared Maven parent/BOM split, not a runtime dependency.
+- **common-health** — see [common-health](common-health/) — reusable, database-neutral and PostgreSQL-specific Actuator health indicators.
+- **example-rest-api** — see [example-rest-api](example-rest-api/) — the runnable blog demo app.
+
+`queries.sql` has example read queries against the app's seeded data; it isn't run automatically.
