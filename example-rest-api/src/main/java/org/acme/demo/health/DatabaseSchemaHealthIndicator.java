@@ -4,15 +4,15 @@ import lombok.RequiredArgsConstructor;
 
 import java.util.List;
 
+import org.springframework.boot.actuate.autoconfigure.health.ConditionalOnEnabledHealthIndicator;
 import org.springframework.boot.actuate.health.Health;
 import org.springframework.boot.actuate.health.HealthIndicator;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Component;
 
 @Component
 @RequiredArgsConstructor
-@ConditionalOnProperty(name = "management.health.schema.enabled", havingValue = "true", matchIfMissing = true)
+@ConditionalOnEnabledHealthIndicator("databaseSchema")
 public class DatabaseSchemaHealthIndicator implements HealthIndicator {
 
     private static final String DATABASE_NAME = "PostgreSQL";

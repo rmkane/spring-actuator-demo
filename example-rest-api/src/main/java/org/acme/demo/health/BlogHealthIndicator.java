@@ -1,6 +1,7 @@
 package org.acme.demo.health;
 
 import org.acme.demo.repository.UserRepository;
+import org.springframework.boot.actuate.autoconfigure.health.ConditionalOnEnabledHealthIndicator;
 import org.springframework.boot.actuate.health.Health;
 import org.springframework.boot.actuate.health.HealthIndicator;
 import org.springframework.stereotype.Component;
@@ -9,6 +10,7 @@ import lombok.RequiredArgsConstructor;
 
 @Component
 @RequiredArgsConstructor
+@ConditionalOnEnabledHealthIndicator("blog")
 public class BlogHealthIndicator implements HealthIndicator {
 
     private final UserRepository userRepository;

@@ -14,7 +14,9 @@ management:
       enabled: true
     postgres:
       enabled: true
-    schema:
+    databaseSchema:
+      enabled: true
+    blog:
       enabled: true
 
 spring:
